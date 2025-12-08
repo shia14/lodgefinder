@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lodge Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Risque&family=Lily+Script+One&display=swap" rel="stylesheet">
+   
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="hero-container">
+        <div class="background-image"></div>
+        
+        <div class="search-container">
+            <button class="search-button" aria-label="Search">
+                <span class="search-text">search</span>
+                <img src="images/search-icon.svg" alt="" class="search-icon">
+            </button>
+        </div>
+        
+       
+        <div class="lodge-finder-text">Lodge finder</div>
+
+        /* the scrolling effect the the text*/
+       <!-- Top marquee (top center) -->
+<div class="marquee-wrap position-top" id="marqueeWrap1" data-speed="10">
+    <div class="marquee" id="marquee1" aria-label="Top scrolling text"></div>
+  </div>
+  
+  <!-- Center marquee (middle center) -->/*updated the potion of the 2nd scrolling text*/
+  <div class="marquee-wrap position-66px-above-bottom" id="marqueeWrap2" data-speed="16">
+    <div class="marquee" id="marquee2" aria-label="Center scrolling text"></div>
+  </div>
+  
+    <script src="script.js"></script>
+</body>
+</html>
+
