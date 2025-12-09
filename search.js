@@ -3,8 +3,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchForm = document.getElementById('lodgeSearchForm');
 
     // Initial render of all lodges
-    const allLodges = getLodges();
-    renderLodges(allLodges);
+    // Ensure getLodges is available from script.js, otherwise fallback
+    const allLodges = (typeof getLodges === 'function') ? getLodges() : JSON.parse(localStorage.getItem('lodges') || '[]');
+    renderSearchLodges(allLodges);
 
     // Handle form submission
     if (searchForm) {
@@ -18,11 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             const filteredLodges = filterLodges(allLodges, formData);
-            renderLodges(filteredLodges);
+            renderSearchLodges(filteredLodges);
         });
     }
 
-    // Animation enhancements rely on dynamic elements now, handled in renderLodges or via event delegation
+    // Animation enhancements
     const lodgesGrid = document.getElementById('lodgesGrid');
     if (lodgesGrid) {
         lodgesGrid.addEventListener('mouseover', function (e) {
@@ -40,10 +41,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
-function getLodges() {
-    return JSON.parse(localStorage.getItem('lodges') || '[]');
-}
 
 function filterLodges(lodges, filters) {
     return lodges.filter(lodge => {
@@ -70,7 +67,7 @@ function filterLodges(lodges, filters) {
     });
 }
 
-function renderLodges(lodges) {
+function renderSearchLodges(lodges) {
     const grid = document.getElementById('lodgesGrid');
     if (!grid) return;
 
@@ -81,16 +78,26 @@ function renderLodges(lodges) {
         return;
     }
 
+    // Safety check for bookmark functions
+    const checkBookmark = (id) => (typeof isBookmarked === 'function') ? isBookmarked(id) : false;
+
     lodges.forEach(lodge => {
         const card = document.createElement('div');
         card.className = 'lodge-card';
 
         // Image handling
         let imageSrc = lodge.image;
-        // If not base64 and not remote http, assumes relative path from root
-        // Since search.html is in root, 'images/...' works fine.
+
+        const bookmarked = checkBookmark(lodge.id);
+        const heart = bookmarked ? '♥' : '♡';
+        const activeClass = bookmarked ? 'active' : '';
 
         card.innerHTML = `
+            <div class="card-bookmark">
+                <button class="bookmark-btn ${activeClass}" data-id="${lodge.id}">
+                    ${heart}
+                </button>
+            </div>
             <div class="lodge-image-placeholder" style="background-image: url('${imageSrc}'); background-size: cover; background-position: center;"></div>
             <div class="lodge-info">
                 <h3>${lodge.name}</h3>
@@ -103,12 +110,23 @@ function renderLodges(lodges) {
             </div>
         `;
 
+        // Bookmark Click
+        const bookmarkBtn = card.querySelector('.bookmark-btn');
+        if (bookmarkBtn) {
+            bookmarkBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Avoid triggering card click
+                if (typeof toggleBookmark === 'function') {
+                    toggleBookmark(lodge.id, bookmarkBtn);
+                } else {
+                    alert("Bookmark functionality unavailable.");
+                }
+            });
+        }
+
         // Make the whole card clickable except the button (standard pattern, or just button)
-        // Adding click handler to card to navigate
         card.style.cursor = 'pointer';
         card.addEventListener('click', (e) => {
-            // Prevent if clicked on the actual link to avoid double navigation
-            if (!e.target.closest('.view-details-btn')) {
+            if (!e.target.closest('.view-details-btn') && !e.target.closest('.bookmark-btn')) {
                 window.location.href = `lodge-details.html?id=${lodge.id}`;
             }
         });

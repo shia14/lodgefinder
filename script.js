@@ -15,22 +15,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const isDetailsPage = path.includes('lodge-details.html');
 
     // Geolocation for both pages (for Currency and "Lodges Near You")
+    // Always render defaults first to prevent empty page
+    if (!isDetailsPage) {
+        const allLodges = getLodges();
+        // Just show first 3 as featured/defaults initially
+        renderLodges(allLodges.slice(0, 3), "Featured Destinations");
+    } else {
+        // Default currency
+        updatePrices('USD', 1, '$');
+    }
+
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => handleLocationSuccess(position, isDetailsPage),
             (error) => handleError(error, isDetailsPage)
         );
-    } else {
-        // Fallback
-        if (!isDetailsPage) {
-            // Load "Featured" which effectively acts as default
-            const allLodges = getLodges();
-            // Just show first 3 as featured/defaults if we don't have location
-            renderLodges(allLodges.slice(0, 3), "Featured Destinations");
-        } else {
-            // Default currency
-            updatePrices('USD', 1, '$');
-        }
     }
 
     // Specific logic for Lodge Details Page
@@ -111,46 +110,182 @@ function showLodgesNearYou(lat, lon) {
     renderLodges(nearbyLodges, "Lodges Near You");
 }
 
+// Initialize Bookmarks
+setupBookmarks();
+
+// --- Data Layer ---
+// ... (initializeData remains same)
+
+// --- Bookmarks Logic ---
+let currentBookmarkLodgeId = null;
+
+function setupBookmarks() {
+    // Inject Modal if not present (simpler to adding to all HTMLs manually)
+    if (!document.getElementById('bookmarkModal')) {
+        const modalHTML = `
+            <div id="bookmarkModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal close-bookmark">&times;</span>
+                    <h2>Get Updates</h2>
+                    <p class="subscribe-note">Bookmark this lodge and subscribe to receive discount alerts and special event notifications.</p>
+                    <input type="email" id="bookmarkEmail" class="subscribe-input" placeholder="Enter your email address">
+                    <button class="modal-btn primary" id="confirmBookmarkBtn">Bookmark & Subscribe</button>
+                    <button class="modal-btn" id="cancelBookmarkBtn">Cancel</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    const modal = document.getElementById('bookmarkModal');
+    const closeBtn = modal.querySelector('.close-bookmark');
+    const cancelBtn = document.getElementById('cancelBookmarkBtn');
+    const confirmBtn = document.getElementById('confirmBookmarkBtn');
+    const emailInput = document.getElementById('bookmarkEmail');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        emailInput.value = ''; // Reset
+        currentBookmarkLodgeId = null;
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    confirmBtn.addEventListener('click', () => {
+        const email = emailInput.value;
+        if (!email || !email.includes('@')) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+
+        if (currentBookmarkLodgeId) {
+            saveBookmark(currentBookmarkLodgeId, email);
+        }
+        closeModal();
+    });
+}
+
+function getBookmarks() {
+    return JSON.parse(localStorage.getItem('bookmarks') || '[]');
+}
+
+function isBookmarked(id) {
+    const bookmarks = getBookmarks();
+    return bookmarks.some(b => b.id == id);
+}
+
+function toggleBookmark(id, btnElement) {
+    if (isBookmarked(id)) {
+        // Remove
+        if (confirm("Remove this lodge from your bookmarks?")) {
+            const bookmarks = getBookmarks().filter(b => b.id != id);
+            localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+            updateBookmarkVisuals(id, false);
+        }
+    } else {
+        // Add -> Open Modal
+        currentBookmarkLodgeId = id;
+        document.getElementById('bookmarkModal').classList.add('active');
+    }
+}
+
+function saveBookmark(id, email) {
+    const bookmarks = getBookmarks();
+    bookmarks.push({
+        id: id,
+        email: email,
+        date: new Date().toISOString()
+    });
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+
+    // Alert or Toast
+    alert(`Lodge bookmarked! You will receive alerts at ${email}.`);
+    updateBookmarkVisuals(id, true);
+}
+
+function updateBookmarkVisuals(id, active) {
+    // Update all matching buttons on page (could be multiple if in list and details)
+    const btns = document.querySelectorAll(`.bookmark-btn[data-id="${id}"]`);
+    btns.forEach(btn => {
+        if (active) {
+            btn.classList.add('active');
+            btn.innerHTML = '♥'; // Heart filled logic or icon change
+        } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '♡'; // Heart outline
+        }
+    });
+}
+// -----------------------
+
+// Bookmarks End
+
+// Updated renderLodges to include Bookmark Button
+// Updated renderLodges to include Bookmark Button
 function renderLodges(lodges, titleOverride = "Lodges Near You") {
     const container = document.querySelector('.featured-section');
-    if (!container) return;
+    if (container) {
+        const header = container.querySelector('.section-header h2');
+        if (header) header.textContent = titleOverride;
+    }
 
-    const header = container.querySelector('.section-header h2');
-    if (header) header.textContent = titleOverride;
-
-    const grid = container.querySelector('.featured-grid');
+    const grid = document.querySelector('.featured-grid') || document.getElementById('lodgesGrid');
     if (!grid) return;
 
     grid.innerHTML = '';
 
     lodges.forEach(lodge => {
         const card = document.createElement('div');
-        card.className = 'featured-item';
+        // Check context: search page uses .lodge-card, home uses .featured-item
+        const isSearch = grid.id === 'lodgesGrid';
+        card.className = isSearch ? 'lodge-card' : 'featured-item';
 
-        // Pass only ID for cleaner URL
         const queryParams = new URLSearchParams({ id: lodge.id }).toString();
+        const bookmarked = isBookmarked(lodge.id);
+        const heartIcon = bookmarked ? '♥' : '♡';
+        const activeClass = bookmarked ? 'active' : '';
 
+        // Card Content
         card.innerHTML = `
-            <div class="featured-image-placeholder" style="background-image: url('${lodge.image}'); background-size: cover; background-position: center;"></div>
-            <div class="featured-info" style="padding: 1rem;">
+            <div class="card-bookmark">
+                <button class="bookmark-btn ${activeClass}" data-id="${lodge.id}">${heartIcon}</button>
+            </div>
+            <div class="${isSearch ? 'lodge-image-placeholder' : 'featured-image-placeholder'}" style="background-image: url('${lodge.image}'); background-size: cover; background-position: center;"></div>
+            <div class="${isSearch ? 'lodge-info' : 'featured-info'}" style="${isSearch ? '' : 'padding: 1rem;'}">
                 <h3>${lodge.name}</h3>
-                <p style="color: #666; font-size: 0.9rem;">${lodge.location}</p>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="color: gold; font-size: 0.9rem;">★ ${lodge.safety || "5.0"}</span>
-                    <p class="price-display" data-usd="${lodge.price}" style="color: var(--accent-color); font-weight: bold; margin-top: 0.5rem; margin-bottom:0;">
-                        $${lodge.price} / night
-                    </p>
+                <p class="location" style="${isSearch ? '' : 'color: #666; font-size: 0.9rem;'}">${lodge.location}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem; ${isSearch ? '' : 'margin-top:0.5rem;'}">
+                     <span style="color: gold; font-size: 0.9rem; font-weight:bold;">★ ${lodge.safety || "5.0"}</span>
+                     <p class="${isSearch ? 'price' : 'price-display'}" data-usd="${lodge.price}" style="${isSearch ? 'margin-bottom:0;' : 'color: var(--accent-color); font-weight: bold; margin:0;'}">
+                        $${lodge.price} <span style="font-size:0.8em; color:#666; font-weight:normal;">/ night</span>
+                     </p>
                 </div>
+                ${isSearch ? `<a href="lodge-details.html?${queryParams}" class="view-details-btn">View Details</a>` : ''}
             </div>
         `;
 
-        card.addEventListener('click', () => {
-            window.location.href = `lodge-details.html?${queryParams}`;
+        // Click behaviors
+        const bookmarkBtn = card.querySelector('.bookmark-btn');
+        bookmarkBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Don't trigger card click
+            toggleBookmark(lodge.id, bookmarkBtn);
+        });
+
+        // Make card clickable (except bookmark/button)
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.bookmark-btn') && !e.target.closest('.view-details-btn')) {
+                window.location.href = `lodge-details.html?${queryParams}`;
+            }
         });
 
         grid.appendChild(card);
     });
 }
+// ... (rest of functions)
 
 function populateLodgeDetails() {
     const params = new URLSearchParams(window.location.search);
