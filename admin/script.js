@@ -21,6 +21,7 @@ function initializeStorage() {
                 description: "Experience the pinnacle of luxury in the heart of the Swiss Alps. Alpine Sanctuary offers a secluded retreat where modern comfort meets traditional alpine charm.",
                 amenities: ["Private Spa", "Gourmet Dining", "Ski-in/Ski-out", "Concierge"],
                 gallery: [],
+                safety: 5,
                 email: "info@alpinesanctuary.com",
                 phone: "+41 12 345 6789"
             },
@@ -33,6 +34,7 @@ function initializeStorage() {
                 description: "Wake up to the sound of waves in this overwater villa. Perfect for honeymooners and peace seekers.",
                 amenities: ["Infinity Pool", "Butler Service", "Water Sports", "Fine Dining"],
                 email: "reservations@oceanfront.com",
+                safety: 4.8,
                 phone: "+960 123 4567"
             },
             {
@@ -44,6 +46,7 @@ function initializeStorage() {
                 description: "A cozy cabin deep in the woods, perfect for disconnecting from the digital world.",
                 amenities: ["Fireplace", "Hiking Trails", "Pet Friendly", "Kitchen"],
                 email: "stay@foresthideaway.com",
+                safety: 4.5,
                 phone: "+1 555 0199"
             }
         ];
@@ -230,6 +233,7 @@ function saveLodgeData() {
     const name = document.getElementById('lodgeName').value;
     const location = document.getElementById('lodgeLocation').value;
     const price = document.getElementById('lodgePrice').value;
+    const safety = document.getElementById('lodgeSafety').value;
 
     // Extended fields
     const description = document.getElementById('lodgeDescription').value;
@@ -267,6 +271,7 @@ function saveLodgeData() {
                 amenities,
                 email,
                 phone,
+                safety,
                 // Only update gallery if new ones provided. 
                 // NOTE: This basic implementation replaces the gallery if new files are selected.
                 // Refining to append could be complex without better UI. 
@@ -287,6 +292,7 @@ function saveLodgeData() {
             amenities,
             email,
             phone,
+            safety: safety || 5, // Default to 5
             gallery: newGallery
         });
     }
@@ -305,6 +311,7 @@ window.editLodge = function (id) {
         document.getElementById('lodgeName').value = lodge.name;
         document.getElementById('lodgeLocation').value = lodge.location;
         document.getElementById('lodgePrice').value = lodge.price;
+        document.getElementById('lodgeSafety').value = lodge.safety || 5;
 
         // Extended
         document.getElementById('lodgeDescription').value = lodge.description || '';

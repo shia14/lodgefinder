@@ -52,6 +52,7 @@ function initializeData() {
                 description: "Experience the pinnacle of luxury...",
                 amenities: ["Private Spa", "Gourmet Dining"],
                 gallery: [],
+                safety: 5,
                 email: "info@alpine.com",
                 phone: "+41 123 456"
             },
@@ -64,6 +65,7 @@ function initializeData() {
                 description: "Stunning overwater villa...",
                 amenities: ["Infinity Pool", "Butler Service"],
                 gallery: [],
+                safety: 4.8,
                 email: "info@ocean.com",
                 phone: "+960 123 456"
             }
@@ -133,9 +135,12 @@ function renderLodges(lodges, titleOverride = "Lodges Near You") {
             <div class="featured-info" style="padding: 1rem;">
                 <h3>${lodge.name}</h3>
                 <p style="color: #666; font-size: 0.9rem;">${lodge.location}</p>
-                <p class="price-display" data-usd="${lodge.price}" style="color: var(--accent-color); font-weight: bold; margin-top: 0.5rem;">
-                    $${lodge.price} / night
-                </p>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color: gold; font-size: 0.9rem;">★ ${lodge.safety || "5.0"}</span>
+                    <p class="price-display" data-usd="${lodge.price}" style="color: var(--accent-color); font-weight: bold; margin-top: 0.5rem; margin-bottom:0;">
+                        $${lodge.price} / night
+                    </p>
+                </div>
             </div>
         `;
 
@@ -176,7 +181,7 @@ function populateLodgeDetails() {
 
         // Hero
         document.querySelector('.hero-title').textContent = lodge.name;
-        document.querySelector('.hero-subtitle').textContent = lodge.location;
+        document.querySelector('.hero-subtitle').innerHTML = `${lodge.location} <span style="margin-left:15px; font-size:0.8em; color:gold;">★ ${lodge.safety || '5.0'} Safety Score</span>`;
         const heroBg = document.querySelector('.background-image');
         if (heroBg && lodge.image) {
             heroBg.style.backgroundImage = `url('${lodge.image}')`;

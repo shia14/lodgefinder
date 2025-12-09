@@ -95,7 +95,10 @@ function renderLodges(lodges) {
             <div class="lodge-info">
                 <h3>${lodge.name}</h3>
                 <p class="location">${lodge.location}</p>
-                <p class="price">$${lodge.price}<span style="font-size:0.8em; color:#666; font-weight:normal;">/night</span></p>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
+                     <span style="color: gold; font-size: 0.9rem; font-weight:bold;">★ ${lodge.safety || "5.0"}</span>
+                     <p class="price" style="margin-bottom:0;">$${lodge.price}<span style="font-size:0.8em; color:#666; font-weight:normal;">/night</span></p>
+                </div>
                 <a href="lodge-details.html?id=${lodge.id}" class="view-details-btn">View Details</a>
             </div>
         `;
