@@ -193,6 +193,68 @@ function saveLodges(lodges) {
     }
 }
 
+// --- Broadcast Logic ---
+const broadcastModal = document.getElementById('broadcastModal');
+const closeBroadcast = document.querySelector('.close-broadcast');
+const broadcastForm = document.getElementById('broadcastForm');
+
+function openBroadcastModal(id) {
+    const lodges = getLodges();
+    const lodge = lodges.find(l => l.id == id);
+    if (!lodge) return;
+
+    document.getElementById('broadcastLodgeId').value = id;
+    document.getElementById('broadcastTitle').textContent = `Send Update: ${lodge.name}`;
+
+    // Calculate subscriber count
+    const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+    const subscribers = bookmarks.filter(b => b.id == id);
+    document.getElementById('broadcastSubtitle').textContent = `Message ${subscribers.length} subscriber(s).`;
+
+    broadcastModal.classList.add('active');
+}
+
+if (closeBroadcast) {
+    closeBroadcast.addEventListener('click', () => {
+        broadcastModal.classList.remove('active');
+    });
+}
+
+window.addEventListener('click', (e) => {
+    if (e.target === broadcastModal) {
+        broadcastModal.classList.remove('active');
+    }
+});
+
+if (broadcastForm) {
+    broadcastForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('broadcastLodgeId').value;
+        const subject = document.getElementById('broadcastSubject').value;
+        const message = document.getElementById('broadcastMessage').value;
+
+        // Get subscribers
+        const bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
+        const subscribers = bookmarks.filter(b => b.id == id);
+
+        if (subscribers.length === 0) {
+            alert("No subscribers found for this lodge.");
+            return;
+        }
+
+        // Simulate Sending via Mailto
+        const emails = subscribers.map(s => s.email).join(',');
+
+        if (confirm(`This will open your default email client to send messages to ${subscribers.length} subscribers. Continue?`)) {
+            const mailtoLink = `mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+            window.location.href = mailtoLink;
+
+            alert(`Email client opened! In a real application, this would have been sent automatically via a server.`);
+            broadcastModal.classList.remove('active');
+            broadcastForm.reset();
+        }
+    });
+}
 function renderTable() {
     const lodges = getLodges();
     const countEl = document.getElementById('totalLodgesCount');
@@ -221,6 +283,7 @@ function renderTable() {
             <td>$${lodge.price}</td>
             <td>
                 <button class="action-btn edit-btn" onclick="editLodge(${lodge.id})">Edit</button>
+                <button class="action-btn" style="background-color: #9b59b6;" onclick="openBroadcastModal(${lodge.id})">✉ Broadcast</button>
                 <button class="action-btn delete-btn" onclick="deleteLodge(${lodge.id})">Delete</button>
             </td>
         `;
@@ -234,6 +297,7 @@ function saveLodgeData() {
     const location = document.getElementById('lodgeLocation').value;
     const price = document.getElementById('lodgePrice').value;
     const safety = document.getElementById('lodgeSafety').value;
+    const discount = document.getElementById('lodgeDiscount').value;
 
     // Extended fields
     const description = document.getElementById('lodgeDescription').value;
@@ -272,6 +336,7 @@ function saveLodgeData() {
                 email,
                 phone,
                 safety,
+                discount,
                 // Only update gallery if new ones provided. 
                 // NOTE: This basic implementation replaces the gallery if new files are selected.
                 // Refining to append could be complex without better UI. 
@@ -293,6 +358,7 @@ function saveLodgeData() {
             email,
             phone,
             safety: safety || 5, // Default to 5
+            discount: discount || 0,
             gallery: newGallery
         });
     }
@@ -312,6 +378,7 @@ window.editLodge = function (id) {
         document.getElementById('lodgeLocation').value = lodge.location;
         document.getElementById('lodgePrice').value = lodge.price;
         document.getElementById('lodgeSafety').value = lodge.safety || 5;
+        document.getElementById('lodgeDiscount').value = lodge.discount || 0;
 
         // Extended
         document.getElementById('lodgeDescription').value = lodge.description || '';

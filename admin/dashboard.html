@@ -88,6 +88,13 @@
                     <input type="number" id="lodgeSafety" min="1" max="5" step="0.1" required value="5">
                 </div>
 
+                <!-- Discount -->
+                <div class="form-group">
+                    <label for="lodgeDiscount">Discount Percentage (%)</label>
+                    <input type="number" id="lodgeDiscount" min="0" max="100" value="0">
+                    <small>Set to 0 to remove discount.</small>
+                </div>
+
                 <!-- Expanded Info -->
                 <div class="form-group">
                     <label for="lodgeDescription">Description</label>
@@ -132,6 +139,28 @@
                     <button type="button" class="cancel-btn close-modal-btn">Cancel</button>
                     <button type="submit" class="save-btn">Save Lodge</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Broadcast Modal -->
+    <div id="broadcastModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal close-broadcast">&times;</span>
+            <h2 id="broadcastTitle">Send Update</h2>
+            <p id="broadcastSubtitle">Message subscribers.</p>
+            <form id="broadcastForm">
+                <input type="hidden" id="broadcastLodgeId">
+                <div class="form-group">
+                    <label for="broadcastSubject">Subject</label>
+                    <input type="text" id="broadcastSubject" required placeholder="e.g., Special Winter Sale!">
+                </div>
+                <div class="form-group">
+                    <label for="broadcastMessage">Message</label>
+                    <textarea id="broadcastMessage" required rows="4"
+                        placeholder="Enter your message here..."></textarea>
+                </div>
+                <button type="submit" class="save-btn">Send Broadcast</button>
             </form>
         </div>
     </div>

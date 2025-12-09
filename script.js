@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isDetailsPage) {
         populateLodgeDetails();
     }
+
+    // Initialize Bookmarks safely
+    setupBookmarks();
 });
 
 // --- Data Layer ---
@@ -110,14 +113,12 @@ function showLodgesNearYou(lat, lon) {
     renderLodges(nearbyLodges, "Lodges Near You");
 }
 
-// Initialize Bookmarks
-setupBookmarks();
+// Initialize Bookmarks (Moved to DOMContentLoaded)
 
 // --- Data Layer ---
 // ... (initializeData remains same)
 
 // --- Bookmarks Logic ---
-let currentBookmarkLodgeId = null;
 
 function setupBookmarks() {
     // Inject Modal if not present (simpler to adding to all HTMLs manually)
@@ -138,6 +139,7 @@ function setupBookmarks() {
     }
 
     const modal = document.getElementById('bookmarkModal');
+    if (!modal) return;
     const closeBtn = modal.querySelector('.close-bookmark');
     const cancelBtn = document.getElementById('cancelBookmarkBtn');
     const confirmBtn = document.getElementById('confirmBookmarkBtn');
@@ -146,7 +148,7 @@ function setupBookmarks() {
     const closeModal = () => {
         modal.classList.remove('active');
         emailInput.value = ''; // Reset
-        currentBookmarkLodgeId = null;
+        delete modal.dataset.lodgeId;
     };
 
     closeBtn.addEventListener('click', closeModal);
@@ -162,10 +164,14 @@ function setupBookmarks() {
             return;
         }
 
-        if (currentBookmarkLodgeId) {
-            saveBookmark(currentBookmarkLodgeId, email);
+        const lodgeId = modal.dataset.lodgeId;
+        if (lodgeId) {
+            saveBookmark(lodgeId, email);
+            closeModal();
+        } else {
+            alert("Error: Lodge ID missing. Please try again.");
+            closeModal();
         }
-        closeModal();
     });
 }
 
@@ -188,8 +194,11 @@ function toggleBookmark(id, btnElement) {
         }
     } else {
         // Add -> Open Modal
-        currentBookmarkLodgeId = id;
-        document.getElementById('bookmarkModal').classList.add('active');
+        const modal = document.getElementById('bookmarkModal');
+        if (modal) {
+            modal.dataset.lodgeId = id;
+            modal.classList.add('active');
+        }
     }
 }
 
@@ -200,11 +209,15 @@ function saveBookmark(id, email) {
         email: email,
         date: new Date().toISOString()
     });
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-
-    // Alert or Toast
-    alert(`Lodge bookmarked! You will receive alerts at ${email}.`);
-    updateBookmarkVisuals(id, true);
+    try {
+        localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+        // Alert or Toast
+        alert(`Lodge bookmarked! You will receive alerts at ${email}.`);
+        updateBookmarkVisuals(id, true);
+    } catch (e) {
+        console.error("Storage failed:", e);
+        alert("Unable to save bookmark. Your storage might be full.");
+    }
 }
 
 function updateBookmarkVisuals(id, active) {
@@ -260,10 +273,14 @@ function renderLodges(lodges, titleOverride = "Lodges Near You") {
                 <p class="location" style="${isSearch ? '' : 'color: #666; font-size: 0.9rem;'}">${lodge.location}</p>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem; ${isSearch ? '' : 'margin-top:0.5rem;'}">
                      <span style="color: gold; font-size: 0.9rem; font-weight:bold;">★ ${lodge.safety || "5.0"}</span>
-                     <p class="${isSearch ? 'price' : 'price-display'}" data-usd="${lodge.price}" style="${isSearch ? 'margin-bottom:0;' : 'color: var(--accent-color); font-weight: bold; margin:0;'}">
-                        $${lodge.price} <span style="font-size:0.8em; color:#666; font-weight:normal;">/ night</span>
-                     </p>
-                </div>
+                     <div style="text-align: right;">
+                        ${lodge.discount > 0 ? `<span style="font-size: 0.8rem; text-decoration: line-through; color: #999;">$${lodge.price}</span>` : ''}
+                        <p class="${isSearch ? 'price' : 'price-display'}" data-usd="${lodge.price}" data-discount="${lodge.discount || 0}" style="${isSearch ? 'margin-bottom:0;' : 'color: var(--accent-color); font-weight: bold; margin:0;'}">
+                            $${lodge.discount > 0 ? Math.round(lodge.price * (1 - lodge.discount / 100)) : lodge.price} <span style="font-size:0.8em; color:#666; font-weight:normal;">/ night</span>
+                        </p>
+                        ${lodge.discount > 0 ? `<span style="background: #e74c3c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">${lodge.discount}% OFF</span>` : ''}
+                     </div>
+                 </div>
                 ${isSearch ? `<a href="lodge-details.html?${queryParams}" class="view-details-btn">View Details</a>` : ''}
             </div>
         `;
@@ -387,10 +404,22 @@ function populateLodgeDetails() {
         if (priceEl && lodge.price) {
             priceEl.classList.add('price-display');
             priceEl.setAttribute('data-usd', lodge.price);
-            priceEl.innerHTML = `$${lodge.price} <span class="per-night">/ night</span>`;
+            priceEl.setAttribute('data-discount', lodge.discount || 0);
+
+            if (lodge.discount > 0) {
+                const discounted = Math.round(lodge.price * (1 - lodge.discount / 100));
+                priceEl.innerHTML = `
+                    <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                        <span style="font-size: 1rem; text-decoration: line-through; color: #999;">$${lodge.price}</span>
+                        <span>$${discounted} <span class="per-night">/ night</span></span>
+                        <span style="background: #e74c3c; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.9rem; font-weight: bold; margin-top:5px;">${lodge.discount}% DISCOUNT</span>
+                    </div>
+                `;
+            } else {
+                priceEl.innerHTML = `$${lodge.price} <span class="per-night">/ night</span>`;
+            }
         }
 
-        // Contact
         // Contact
         const contactDiv = document.querySelector('.contact-info');
         const email = lodge.email || 'info@lodge.com';
@@ -494,12 +523,26 @@ function updatePrices(currency, rate, symbol) {
     const priceElements = document.querySelectorAll('.price-display');
     priceElements.forEach(el => {
         const usdPrice = el.getAttribute('data-usd');
+        const discount = parseFloat(el.getAttribute('data-discount') || 0);
+
         if (usdPrice) {
-            const converted = Math.round(usdPrice * rate);
-            if (el.querySelector('.per-night')) {
-                el.innerHTML = `${symbol}${converted} <span class="per-night">/ night</span>`;
+            const originalConverted = Math.round(usdPrice * rate);
+
+            if (discount > 0) {
+                const discountedConverted = Math.round(originalConverted * (1 - discount / 100));
+                // Find or create sibling for original price if renderLodges didn't handle it fully dynamically in specific contexts
+                // But for renderLodges, we formatted it.
+                // Re-rendering innerHTML is safest:
+                el.innerHTML = `
+                    <span style="font-size: 0.8rem; text-decoration: line-through; color: #999; display:block; text-align:right;">${symbol}${originalConverted}</span>
+                    ${symbol}${discountedConverted} <span class="per-night">/ night</span>
+                `;
             } else {
-                el.textContent = `${symbol}${converted} / night`;
+                if (el.querySelector('.per-night')) {
+                    el.innerHTML = `${symbol}${originalConverted} <span class="per-night">/ night</span>`;
+                } else {
+                    el.textContent = `${symbol}${originalConverted} / night`;
+                }
             }
         }
     });

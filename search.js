@@ -104,7 +104,13 @@ function renderSearchLodges(lodges) {
                 <p class="location">${lodge.location}</p>
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.5rem;">
                      <span style="color: gold; font-size: 0.9rem; font-weight:bold;">★ ${lodge.safety || "5.0"}</span>
-                     <p class="price" style="margin-bottom:0;">$${lodge.price}<span style="font-size:0.8em; color:#666; font-weight:normal;">/night</span></p>
+                     <div style="text-align: right;">
+                        ${lodge.discount > 0 ? `<span style="font-size: 0.8rem; text-decoration: line-through; color: #999;">$${lodge.price}</span>` : ''}
+                        <p class="price" data-usd="${lodge.price}" data-discount="${lodge.discount || 0}" style="margin-bottom:0;">
+                            $${lodge.discount > 0 ? Math.round(lodge.price * (1 - lodge.discount / 100)) : lodge.price} <span style="font-size:0.8em; color:#666; font-weight:normal;">/night</span>
+                        </p>
+                        ${lodge.discount > 0 ? `<span style="background: #e74c3c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">${lodge.discount}% OFF</span>` : ''}
+                     </div>
                 </div>
                 <a href="lodge-details.html?id=${lodge.id}" class="view-details-btn">View Details</a>
             </div>
