@@ -6,34 +6,59 @@
     <title>Lodge Finder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Risque&family=Lily+Script+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <header class="main-header">
+        <div class="logo">Lodge Finder</div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Destinations</a></li>
+                <li><a href="#">Experiences</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <div class="hero-container">
         <div class="background-image"></div>
-        
-        <div class="search-container">
-            <button class="search-button" aria-label="Search">
-                <span class="search-text">search</span>
-                <img src="images/search-icon.svg" alt="" class="search-icon">
-            </button>
+        <div class="hero-content">
+            <h1 class="hero-title">Find Your Sanctuary</h1>
+            <p class="hero-subtitle">Discover luxury lodges that feel like home.</p>
+            
+            <div class="search-container">
+                <button class="search-button" aria-label="Search">
+                    <span class="search-text">Search Destinations</span>
+                    <img src="images/search-icon.svg" alt="" class="search-icon">
+                </button>
+            </div>
         </div>
-        
-       
-        <div class="lodge-finder-text">Lodge finder</div>
+    </div>
 
-        /* the scrolling effect the the text*/
-       <!-- Top marquee (top center) -->
-<div class="marquee-wrap position-top" id="marqueeWrap1" data-speed="10">
-    <div class="marquee" id="marquee1" aria-label="Top scrolling text"></div>
-  </div>
-  
-  <!-- Center marquee (middle center) -->/*updated the potion of the 2nd scrolling text*/
-  <div class="marquee-wrap position-66px-above-bottom" id="marqueeWrap2" data-speed="16">
-    <div class="marquee" id="marquee2" aria-label="Center scrolling text"></div>
-  </div>
+    <section class="featured-section">
+        <div class="section-header">
+            <h2>Curated Escapes</h2>
+            <p>Hand-picked locations for the discerning traveler.</p>
+        </div>
+        <!-- Placeholder for featured items -->
+        <div class="featured-grid">
+            <div class="featured-item">
+                <div class="featured-image-placeholder"></div>
+                <h3>Mountain Retreats</h3>
+            </div>
+            <div class="featured-item">
+                <div class="featured-image-placeholder"></div>
+                <h3>Coastal Villas</h3>
+            </div>
+            <div class="featured-item">
+                <div class="featured-image-placeholder"></div>
+                <h3>Forest Cabins</h3>
+            </div>
+        </div>
+    </section>
   
     <script src="script.js"></script>
 </body>

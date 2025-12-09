@@ -1,136 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Lodges - Lodge Finder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Limelight&family=Risque&family=Lily+Script+One&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
+    <header class="main-header style-dark">
+        <div class="logo">Lodge Finder</div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="search.html">Destinations</a></li>
+                <li><a href="#">Experiences</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
     <div class="search-page-container">
-        <!-- Home Icon Navigation -->
-        <a href="index.html" class="home-icon" aria-label="Go back to home">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M9 22V12H15V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </a>
+        <!-- Search Header -->
+        <div class="search-header-section">
+            <h1 class="search-page-title">Find Your Perfect Escape</h1>
+            <p class="search-page-subtitle">Filter by location, price, and experience.</p>
+        </div>
 
         <!-- Search Form Section -->
-        <div class="search-form-section">
-            <h1 class="search-page-title">Find Your Perfect Lodge</h1>
-            
+        <div class="search-form-container">
             <form class="search-form" id="lodgeSearchForm">
                 <div class="form-group">
                     <label for="lodgeName">Lodge Name</label>
-                    <input type="text" id="lodgeName" name="lodgeName" placeholder="Enter lodge name">
+                    <input type="text" id="lodgeName" name="lodgeName" placeholder="e.g. Mountain View">
                 </div>
 
                 <div class="form-group">
                     <label for="location">Location</label>
-                    <input type="text" id="location" name="location" placeholder="Enter location">
+                    <input type="text" id="location" name="location" placeholder="e.g. Swiss Alps">
                 </div>
 
                 <div class="form-group">
                     <label for="priceRange">Price Range</label>
                     <select id="priceRange" name="priceRange">
                         <option value="">Any Price</option>
-                        <option value="0-50">$0 - $50</option>
-                        <option value="50-100">$50 - $100</option>
-                        <option value="100-200">$100 - $200</option>
-                        <option value="200-500">$200 - $500</option>
+                        <option value="0-100">Under $100</option>
+                        <option value="100-300">$100 - $300</option>
+                        <option value="300-500">$300 - $500</option>
                         <option value="500+">$500+</option>
                     </select>
                 </div>
 
-                <button type="submit" class="search-submit-btn">Search</button>
+                <button type="submit" class="search-submit-btn">Search Lodges</button>
             </form>
         </div>
 
         <!-- Lodge Grid Section -->
         <div class="lodges-grid-section">
             <div class="lodges-grid" id="lodgesGrid">
-                <!-- Lodge cards with varying sizes for moodboard layout -->
-                <!-- Row 1 -->
-                <div class="lodge-card large">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
+                <!-- Example Cards -->
+                <div class="lodge-card">
+                    <div class="lodge-image-placeholder"></div>
+                    <div class="lodge-info">
+                        <h3>Alpine Sanctuary</h3>
+                        <p class="location">Swiss Alps</p>
+                        <p class="price">From $450/night</p>
+                        <a href="lodge-details.html" class="view-details-btn">View Details</a>
                     </div>
                 </div>
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
+                <div class="lodge-card">
+                    <div class="lodge-image-placeholder"></div>
+                    <div class="lodge-info">
+                        <h3>Oceanfront Villa</h3>
+                        <p class="location">Maldives</p>
+                        <p class="price">From $850/night</p>
+                        <a href="#" class="view-details-btn">View Details</a>
                     </div>
                 </div>
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
+                <div class="lodge-card">
+                    <div class="lodge-image-placeholder"></div>
+                    <div class="lodge-info">
+                        <h3>Forest Hideaway</h3>
+                        <p class="location">Oregon, USA</p>
+                        <p class="price">From $250/night</p>
+                        <a href="#" class="view-details-btn">View Details</a>
                     </div>
                 </div>
-                
-                <!-- Row 2 -->
-                <div class="lodge-card medium">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card medium tall">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                
-                <!-- Row 3 -->
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card large">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                
-                <!-- Row 4 -->
-                <div class="lodge-card medium tall">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card medium">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                
-                <!-- Row 5 -->
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card medium">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
-                    </div>
-                </div>
-                <div class="lodge-card small">
-                    <div class="lodge-image-placeholder">
-                        <span>Place holder for lodge picture and details</span>
+                <div class="lodge-card">
+                    <div class="lodge-image-placeholder"></div>
+                    <div class="lodge-info">
+                        <h3>Desert Oasis</h3>
+                        <p class="location">Dubai, UAE</p>
+                        <p class="price">From $600/night</p>
+                        <a href="#" class="view-details-btn">View Details</a>
                     </div>
                 </div>
             </div>
@@ -139,5 +107,5 @@
 
     <script src="search.js"></script>
 </body>
-</html>
 
+</html>
