@@ -75,8 +75,18 @@
                     <input type="text" id="lodgeName" required>
                 </div>
                 <div class="form-group">
-                    <label for="lodgeLocation">Location</label>
-                    <input type="text" id="lodgeLocation" required>
+                    <label for="lodgeLocation">Location (Text)</label>
+                    <input type="text" id="lodgeLocation" required placeholder="e.g. Swiss Alps">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="lodgeLat">Latitude</label>
+                        <input type="number" id="lodgeLat" step="any" placeholder="e.g. 46.603354">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="lodgeLon">Longitude</label>
+                        <input type="number" id="lodgeLon" step="any" placeholder="e.g. 7.96871">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="lodgePrice">Price (USD)</label>

@@ -23,7 +23,9 @@ function initializeStorage() {
                 gallery: [],
                 safety: 5,
                 email: "info@alpinesanctuary.com",
-                phone: "+41 12 345 6789"
+                phone: "+41 12 345 6789",
+                lat: 46.603354,
+                lon: 7.96871
             },
             {
                 id: 2,
@@ -35,7 +37,9 @@ function initializeStorage() {
                 amenities: ["Infinity Pool", "Butler Service", "Water Sports", "Fine Dining"],
                 email: "reservations@oceanfront.com",
                 safety: 4.8,
-                phone: "+960 123 4567"
+                phone: "+960 123 4567",
+                lat: 4.175496,
+                lon: 73.509347
             },
             {
                 id: 3,
@@ -308,6 +312,9 @@ function saveLodgeData() {
     // Image handling
     const newImage = document.getElementById('lodgeImageBase64').value;
 
+    const lat = parseFloat(document.getElementById('lodgeLat').value) || 0;
+    const lon = parseFloat(document.getElementById('lodgeLon').value) || 0;
+
     // Gallery handling
     const newGalleryJson = document.getElementById('lodgeGalleryBase64').value;
     let newGallery = [];
@@ -337,6 +344,8 @@ function saveLodgeData() {
                 phone,
                 safety,
                 discount,
+                lat,
+                lon,
                 // Only update gallery if new ones provided. 
                 // NOTE: This basic implementation replaces the gallery if new files are selected.
                 // Refining to append could be complex without better UI. 
@@ -359,6 +368,8 @@ function saveLodgeData() {
             phone,
             safety: safety || 5, // Default to 5
             discount: discount || 0,
+            lat,
+            lon,
             gallery: newGallery
         });
     }
@@ -379,6 +390,8 @@ window.editLodge = function (id) {
         document.getElementById('lodgePrice').value = lodge.price;
         document.getElementById('lodgeSafety').value = lodge.safety || 5;
         document.getElementById('lodgeDiscount').value = lodge.discount || 0;
+        document.getElementById('lodgeLat').value = lodge.lat || '';
+        document.getElementById('lodgeLon').value = lodge.lon || '';
 
         // Extended
         document.getElementById('lodgeDescription').value = lodge.description || '';

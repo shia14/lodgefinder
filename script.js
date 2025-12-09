@@ -56,7 +56,9 @@ function initializeData() {
                 gallery: [],
                 safety: 5,
                 email: "info@alpine.com",
-                phone: "+41 123 456"
+                phone: "+41 123 456",
+                lat: 46.603354,
+                lon: 7.96871
             },
             {
                 id: 2,
@@ -69,7 +71,9 @@ function initializeData() {
                 gallery: [],
                 safety: 4.8,
                 email: "info@ocean.com",
-                phone: "+960 123 456"
+                phone: "+960 123 456",
+                lat: 4.175496,
+                lon: 73.509347
             }
         ];
         // We do strictly simpler initialization if missing, to avoid overwriting complex logic if any
@@ -489,6 +493,44 @@ function populateLodgeDetails() {
                 const cleanPhone = phone.replace(/[^\d]/g, '');
                 window.open(`https://wa.me/${cleanPhone}`, '_blank');
             };
+        }
+
+        // Initialize Map (Google Maps Embed)
+        const mapContainer = document.getElementById('map');
+        if (mapContainer) {
+            // Default: Alpine
+            let lat = lodge.lat || 46.603354;
+            let lon = lodge.lon || 7.96871;
+
+            if (lodge.lat && lodge.lon) {
+                // If specific coords exist, use them
+                lat = lodge.lat;
+                lon = lodge.lon;
+            } else if (lodge.name !== 'Alpine Sanctuary') {
+                // If no coords and not the default example, maybe try to fallback to 0,0 or hide?
+                // But if it is "Oceanfront Villa" it should have coords if data is fresh.
+                // If not, we might default to hiding or showing a general world map.
+                // We'll stick to the default fallback mechanism or hide logic.
+                // For now, if no lat/lon in object, we hide, unless it is the hardcoded Alpine example.
+                const mapSection = document.querySelector('.map-section');
+                if (!lodge.lat && !lodge.lon && mapSection) {
+                    mapSection.style.display = 'none';
+                    return;
+                }
+            }
+
+            // Construct iframe
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('width', '100%');
+            iframe.setAttribute('height', '100%');
+            iframe.style.border = '0';
+            iframe.setAttribute('loading', 'lazy');
+            iframe.setAttribute('allowfullscreen', '');
+            // Use the Embed API with the q parameter for coordinates
+            iframe.src = `https://maps.google.com/maps?q=${lat},${lon}&hl=en&z=14&output=embed`;
+
+            mapContainer.innerHTML = ''; // Clear loading
+            mapContainer.appendChild(iframe);
         }
     }
 }
