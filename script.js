@@ -211,7 +211,34 @@ function populateLodgeDetails() {
                 item.style.backgroundImage = `url('${url}')`;
                 item.style.backgroundSize = 'cover';
                 item.style.backgroundPosition = 'center';
+
+                // Add click event for lightbox
+                item.addEventListener('click', () => {
+                    const lightbox = document.getElementById('lightboxModal');
+                    const lightboxImg = document.getElementById('lightboxImage');
+                    if (lightbox && lightboxImg) {
+                        lightboxImg.src = url;
+                        lightbox.classList.add('active');
+                    }
+                });
+
                 galleryGrid.appendChild(item);
+            });
+        }
+
+        // Lightbox Close Logic (Global, but initialized here for simplicity if element exists)
+        const lightbox = document.getElementById('lightboxModal');
+        if (lightbox) {
+            const closeBtn = lightbox.querySelector('.lightbox-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    lightbox.classList.remove('active');
+                });
+            }
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    lightbox.classList.remove('active');
+                }
             });
         }
 
