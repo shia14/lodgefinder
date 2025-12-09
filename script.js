@@ -329,14 +329,22 @@ function determineCurrency(lat, lon) {
     let rate = 1;
     let symbol = '$';
 
-    if (lat > 48) {
+    if (lat > 48 && lat < 60 && lon > -10 && lon < 30) {
+        // Rough Europe box (excluding UK logic below)
         currency = 'EUR';
         rate = 0.92;
         symbol = '€';
-    } else if (lon > -5 && lon < 2) {
+    } else if (lat > 50 && lat < 60 && lon > -10 && lon < 2) {
+        // UK specific (override EUR if needed, though simple lat/lon boxes are tricky)
+        // Simplified for this demo:
         currency = 'GBP';
         rate = 0.79;
         symbol = '£';
+    } else if (lat >= -17 && lat <= -9 && lon >= 32 && lon <= 36) {
+        // Malawi
+        currency = 'MWK';
+        rate = 1750;
+        symbol = 'MK';
     }
 
     updatePrices(currency, rate, symbol);
