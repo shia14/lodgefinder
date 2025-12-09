@@ -51,6 +51,7 @@ function initializeData() {
                 image: "images/background.png",
                 description: "Experience the pinnacle of luxury...",
                 amenities: ["Private Spa", "Gourmet Dining"],
+                gallery: [],
                 email: "info@alpine.com",
                 phone: "+41 123 456"
             },
@@ -62,6 +63,7 @@ function initializeData() {
                 image: "images/background.png",
                 description: "Stunning overwater villa...",
                 amenities: ["Infinity Pool", "Butler Service"],
+                gallery: [],
                 email: "info@ocean.com",
                 phone: "+960 123 456"
             }
@@ -195,6 +197,22 @@ function populateLodgeDetails() {
             } else {
                 amenitiesList.innerHTML = '<li>Private Spa</li><li>Gourmet Dining</li>';
             }
+        }
+
+        // Gallery
+        const galleryGrid = document.querySelector('.gallery-grid');
+        if (galleryGrid && lodge.gallery && lodge.gallery.length > 0) {
+            galleryGrid.innerHTML = '';
+            lodge.gallery.forEach(imgSrc => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                // Check if base64 or url
+                const url = imgSrc.startsWith('data:') || imgSrc.startsWith('http') ? imgSrc : imgSrc;
+                item.style.backgroundImage = `url('${url}')`;
+                item.style.backgroundSize = 'cover';
+                item.style.backgroundPosition = 'center';
+                galleryGrid.appendChild(item);
+            });
         }
 
         // Price

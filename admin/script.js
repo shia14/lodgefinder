@@ -20,6 +20,7 @@ function initializeStorage() {
                 image: "images/background.png",
                 description: "Experience the pinnacle of luxury in the heart of the Swiss Alps. Alpine Sanctuary offers a secluded retreat where modern comfort meets traditional alpine charm.",
                 amenities: ["Private Spa", "Gourmet Dining", "Ski-in/Ski-out", "Concierge"],
+                gallery: [],
                 email: "info@alpinesanctuary.com",
                 phone: "+41 12 345 6789"
             },
@@ -97,6 +98,46 @@ function setupDashboard() {
     const hiddenBase64 = document.getElementById('lodgeImageBase64');
     const preview = document.getElementById('imagePreview');
 
+    // Gallery Input Helper
+    const galleryInput = document.getElementById('lodgeGalleryFiles');
+    const galleryHidden = document.getElementById('lodgeGalleryBase64');
+    const galleryPreview = document.getElementById('galleryPreviewContainer');
+
+    galleryInput.addEventListener('change', function () {
+        galleryPreview.innerHTML = '';
+        const files = Array.from(this.files);
+        if (!files.length) {
+            // keep existing if any? or clear?
+            // If user selects nothing after selecting something, usually input is empty.
+            // But if we are adding TO existing?
+            // For simplicity: Replace all.
+            return;
+        }
+
+        const promises = files.map(file => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        });
+
+        Promise.all(promises).then(base64Images => {
+            galleryHidden.value = JSON.stringify(base64Images);
+            base64Images.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc;
+                img.style.height = '80px';
+                img.style.width = '80px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '4px';
+                img.style.border = '1px solid #ccc';
+                galleryPreview.appendChild(img);
+            });
+        }).catch(err => console.error(err));
+    });
+
     fileInput.addEventListener('change', function () {
         if (this.files && this.files[0]) {
             const reader = new FileReader();
@@ -116,6 +157,12 @@ function setupDashboard() {
         hiddenBase64.value = '';
         preview.src = '';
         preview.style.display = 'none';
+
+        // Reset gallery
+        document.getElementById('lodgeGalleryBase64').value = '';
+        document.getElementById('galleryPreviewContainer').innerHTML = '';
+        document.getElementById('lodgeGalleryFiles').value = '';
+
         modal.classList.add('active');
     });
 
@@ -193,6 +240,15 @@ function saveLodgeData() {
     // Image handling
     const newImage = document.getElementById('lodgeImageBase64').value;
 
+    // Gallery handling
+    const newGalleryJson = document.getElementById('lodgeGalleryBase64').value;
+    let newGallery = [];
+    if (newGalleryJson) {
+        try {
+            newGallery = JSON.parse(newGalleryJson);
+        } catch (e) { console.error('Error parsing gallery', e); }
+    }
+
     const amenities = amenitiesStr.split(',').map(s => s.trim()).filter(s => s);
 
     let lodges = getLodges();
@@ -211,8 +267,11 @@ function saveLodgeData() {
                 amenities,
                 email,
                 phone,
-                // Only update image if new one provided
-                image: newImage || oldLodge.image
+                // Only update gallery if new ones provided. 
+                // NOTE: This basic implementation replaces the gallery if new files are selected.
+                // Refining to append could be complex without better UI. 
+                // We'll rely on "if newGallery has items, replace old. Else keep old."
+                gallery: newGallery.length > 0 ? newGallery : (oldLodge.gallery || [])
             };
         }
     } else {
@@ -227,7 +286,8 @@ function saveLodgeData() {
             description,
             amenities,
             email,
-            phone
+            phone,
+            gallery: newGallery
         });
     }
 
@@ -251,6 +311,26 @@ window.editLodge = function (id) {
         document.getElementById('lodgeAmenities').value = (lodge.amenities || []).join(', ');
         document.getElementById('lodgeEmail').value = lodge.email || '';
         document.getElementById('lodgePhone').value = lodge.phone || '';
+
+        // Gallery Preview
+        const galleryPreview = document.getElementById('galleryPreviewContainer');
+        const galleryHidden = document.getElementById('lodgeGalleryBase64');
+        galleryPreview.innerHTML = '';
+        galleryHidden.value = ''; // Reset hidden input so we don't accidentally wipe it if we don't touch the file input (logic in save relies on length > 0)
+
+        // Show existing gallery
+        if (lodge.gallery && Array.isArray(lodge.gallery)) {
+            lodge.gallery.forEach(imgSrc => {
+                const img = document.createElement('img');
+                img.src = imgSrc; // These should be base64 or urls
+                img.style.height = '80px';
+                img.style.width = '80px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '4px';
+                img.style.border = '1px solid #ccc';
+                galleryPreview.appendChild(img);
+            });
+        }
 
         // Image Preview
         const preview = document.getElementById('imagePreview');

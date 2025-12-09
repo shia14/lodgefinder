@@ -113,6 +113,16 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="lodgeGalleryFiles">Gallery Images (Select Multiple)</label>
+                    <input type="file" id="lodgeGalleryFiles" accept="image/*" multiple>
+                    <input type="hidden" id="lodgeGalleryBase64"> <!-- Stores JSON string of array -->
+                    <small>Select multiple images. Recommended: &lt; 1MB each</small>
+                    <div id="galleryPreviewContainer" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <!-- Gallery previews go here -->
+                    </div>
+                </div>
+
                 <div class="form-actions">
                     <button type="button" class="cancel-btn close-modal-btn">Cancel</button>
                     <button type="submit" class="save-btn">Save Lodge</button>
