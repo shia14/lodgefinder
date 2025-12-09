@@ -224,13 +224,75 @@ function populateLodgeDetails() {
         }
 
         // Contact
+        // Contact
         const contactDiv = document.querySelector('.contact-info');
+        const email = lodge.email || 'info@lodge.com';
+        const phone = lodge.phone || '+1 234 567 890';
+
         if (contactDiv) {
             contactDiv.innerHTML = `
                 <h4>Contact Us</h4>
-                <p>Email: ${lodge.email || 'info@lodge.com'}</p>
-                <p>Phone: ${lodge.phone || '+1 234 567 890'}</p>
+                <p>Email: <a href="mailto:${email}">${email}</a></p>
+                <p>Phone: <a href="tel:${phone.replace(/\s+/g, '')}">${phone}</a></p>
             `;
+        }
+
+        // Setup Contact Modal Logic
+        const bookBtn = document.querySelector('.book-now-btn');
+        const modal = document.getElementById('contactMethodModal');
+        const closeModal = modal.querySelector('.close-modal');
+
+        // Modal Steps
+        const step1 = document.getElementById('contactOptionsStep1');
+        const step2 = document.getElementById('contactOptionsStep2');
+
+        // Buttons
+        const emailBtn = document.getElementById('contactEmailBtn');
+        const phoneBtn = document.getElementById('contactPhoneBtn');
+        const callAppBtn = document.getElementById('callPhoneBtn');
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const backBtn = document.getElementById('backToStep1');
+
+        if (bookBtn && modal) {
+            bookBtn.addEventListener('click', () => {
+                step1.style.display = 'block';
+                step2.style.display = 'none';
+                modal.classList.add('active');
+            });
+
+            closeModal.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('active');
+            });
+
+            // Action Handlers
+            emailBtn.onclick = () => {
+                window.location.href = `mailto:${email}`;
+                modal.classList.remove('active');
+            };
+
+            phoneBtn.onclick = () => {
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+            };
+
+            backBtn.onclick = () => {
+                step2.style.display = 'none';
+                step1.style.display = 'block';
+            };
+
+            callAppBtn.onclick = () => {
+                window.location.href = `tel:${phone.replace(/\s+/g, '')}`;
+            };
+
+            whatsappBtn.onclick = () => {
+                // Remove non-digit chars for WhatsApp link
+                const cleanPhone = phone.replace(/[^\d]/g, '');
+                window.open(`https://wa.me/${cleanPhone}`, '_blank');
+            };
         }
     }
 }
