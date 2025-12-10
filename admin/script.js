@@ -145,6 +145,13 @@ function setupDashboard() {
         }).catch(err => console.error(err));
     });
 
+    const searchInput = document.getElementById('adminSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            renderTable(e.target.value);
+        });
+    }
+
     fileInput.addEventListener('change', function () {
         if (this.files && this.files[0]) {
             const reader = new FileReader();
@@ -171,16 +178,19 @@ function setupDashboard() {
         document.getElementById('lodgeGalleryFiles').value = '';
 
         modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Lock Scroll
     });
 
     closeBtns.forEach(btn => btn.addEventListener('click', () => {
         modal.classList.remove('active');
+        document.body.style.overflow = ''; // Unlock Scroll
     }));
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         saveLodgeData();
         modal.classList.remove('active');
+        document.body.style.overflow = ''; // Unlock Scroll
         renderTable();
     });
 }
@@ -259,8 +269,17 @@ if (broadcastForm) {
         }
     });
 }
-function renderTable() {
-    const lodges = getLodges();
+function renderTable(searchQuery = '') {
+    let lodges = getLodges();
+
+    if (searchQuery) {
+        const lowerQuery = searchQuery.toLowerCase();
+        lodges = lodges.filter(lodge =>
+            lodge.name.toLowerCase().includes(lowerQuery) ||
+            lodge.location.toLowerCase().includes(lowerQuery)
+        );
+    }
+
     const countEl = document.getElementById('totalLodgesCount');
     if (countEl) countEl.textContent = lodges.length;
 
@@ -435,6 +454,7 @@ window.editLodge = function (id) {
         preview.style.display = 'block';
 
         document.getElementById('lodgeModal').classList.add('active');
+        document.body.style.overflow = 'hidden'; // Lock Scroll
     }
 }
 

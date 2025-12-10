@@ -1,0 +1,8 @@
+/* Add this CSS for scrollable container */
+.scrollable-form-container {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
+    background: #fafafa;
+}

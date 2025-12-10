@@ -32,6 +32,10 @@ body {
     background-color: #FAFAFA;
 }
 
+body.no-scroll {
+    overflow: hidden;
+}
+
 /* ============================================
    Navigation
    ============================================ */
@@ -308,7 +312,9 @@ body {
     min-width: 200px;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+    /* Reduced from default gaps if any */
 }
 
 .form-group label {
@@ -663,10 +669,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Center again */
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
+    /* Removed overflow-y: auto from here */
 }
 
 .modal.active {
@@ -676,14 +684,92 @@ body {
 
 .modal-content {
     background: white;
-    padding: var(--spacing-md);
     border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
+    width: 95vw;
+    max-width: 1200px;
     position: relative;
     transform: translateY(20px);
     transition: transform 0.3s ease;
+    text-align: left;
+    max-height: 90vh;
+    /* Use CSS Grid instead of Flexbox */
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Modal Header */
+.modal-content h2 {
+    padding: var(--spacing-md);
+    padding-bottom: 0;
+    margin: 0;
     text-align: center;
+    grid-row: 1;
+}
+
+/* Wrapper for form - Grid makes this simpler */
+.modal-content>div:not(.close-modal) {
+    grid-row: 2;
+    min-height: 0;
+    /* CRITICAL: Allows grid child to shrink */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Form styling */
+.modal-content form {
+    padding: var(--spacing-sm);
+}
+
+/* SCROLLABLE CONTAINER - Fixed height with scroll */
+.scrollable-form-container {
+    max-height: 60vh;
+    min-height: 0;
+    /* CRITICAL: Allows shrinking for scroll */
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
+    background: #fafafa;
+}
+
+/* Buttons footer - stays at bottom */
+.modal-content .form-actions {
+    grid-row: 3;
+    border-top: 1px solid #eee;
+    padding: 20px;
+    background: white;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.modal-content .form-actions button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.modal-content .cancel-btn {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.modal-content .cancel-btn:hover {
+    background: #d0d0d0;
+}
+
+.modal-content .save-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.modal-content .save-btn:hover {
+    background: #1a2f23;
 }
 
 .modal.active .modal-content {
@@ -692,15 +778,15 @@ body {
 
 .close-modal {
     position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
     cursor: pointer;
     color: #666;
+    z-index: 10;
 }
 
 .modal-btn {
-    display: block;
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -713,6 +799,37 @@ body {
     color: var(--primary-color);
     transition: background 0.3s, transform 0.2s;
     text-decoration: none;
+}
+
+/* Lodge Form Grid Layout */
+#lodgeForm {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 3 columns for landscape feel */
+    gap: 15px;
+    /* Increase gap slightly for 3 columns */
+    text-align: left;
+    width: 100%;
+    /* Ensure it fills the container */
+}
+
+/* On tablet, 2 columns */
+@media (max-width: 900px) {
+    #lodgeForm {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* On mobile, collapse to 1 column */
+@media (max-width: 600px) {
+    #lodgeForm {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-group.full-width,
+.form-actions {
+    grid-column: 1 / -1;
 }
 
 .modal-btn:hover {

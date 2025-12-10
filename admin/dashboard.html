@@ -34,7 +34,11 @@
     <main class="admin-content">
         <header class="content-header">
             <h1>Manage Lodges</h1>
-            <button id="addLodgeBtn" class="primary-btn">+ Add New Lodge</button>
+            <div style="display: flex; gap: 1rem;">
+                <input type="text" id="adminSearchInput" placeholder="Search lodges..."
+                    style="padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <button id="addLodgeBtn" class="primary-btn">+ Add New Lodge</button>
+            </div>
         </header>
 
         <section class="stats-overview">
@@ -68,114 +72,121 @@
         <div class="modal-content">
             <span class="close-modal">&times;</span>
             <h2 id="modalTitle">Add New Lodge</h2>
-            <form id="lodgeForm">
-                <input type="hidden" id="editLodgeId">
-                <div class="form-group">
-                    <label for="lodgeName">Lodge Name</label>
-                    <input type="text" id="lodgeName" required>
-                </div>
-                <div class="form-group">
-                    <label for="lodgeLocation">Location (Text)</label>
-                    <input type="text" id="lodgeLocation" required placeholder="e.g. Swiss Alps">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex:1;">
-                        <label for="lodgeLat">Latitude</label>
-                        <input type="number" id="lodgeLat" step="any" placeholder="e.g. 46.603354">
+            <div class="modal-form-wrapper">
+                <div class="scrollable-form-container">
+                    <form id="lodgeForm">
+                        <input type="hidden" id="editLodgeId">
+                        <div class="form-group">
+                            <label for="lodgeName">Lodge Name</label>
+                            <input type="text" id="lodgeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lodgeLocation">Location (Text)</label>
+                            <input type="text" id="lodgeLocation" required placeholder="e.g. Swiss Alps">
+                        </div>
+                        <div class="full-width" style="display: flex; gap: 10px;">
+                            <div class="form-group" style="flex:1;">
+                                <label for="lodgeLat">Latitude</label>
+                                <input type="number" id="lodgeLat" step="any" placeholder="e.g. 46.603354">
+                            </div>
+                            <div class="form-group" style="flex:1;">
+                                <label for="lodgeLon">Longitude</label>
+                                <input type="number" id="lodgeLon" step="any" placeholder="e.g. 7.96871">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="lodgePrice">Price (USD)</label>
+                            <input type="number" id="lodgePrice" required>
+                        </div>
+                        <!-- Safety Score -->
+                        <div class="form-group">
+                            <label for="lodgeSafety">Community Safety Score (1-5)</label>
+                            <input type="number" id="lodgeSafety" min="1" max="5" step="0.1" required value="5">
+                        </div>
+
+                        <!-- Discount -->
+                        <div class="form-group">
+                            <label for="lodgeDiscount">Discount Percentage (%)</label>
+                            <input type="number" id="lodgeDiscount" min="0" max="100" value="0">
+                            <small>Set to 0 to remove discount.</small>
+                        </div>
+
+                        <!-- Expanded Info -->
+                        <div class="form-group full-width">
+                            <label for="lodgeDescription">Description</label>
+                            <textarea id="lodgeDescription" rows="4"
+                                style="width:100%; padding:10px; font-family:inherit;" required
+                                placeholder="Experience the pinnacle of luxury..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="lodgeAmenities">Amenities (comma separated)</label>
+                            <input type="text" id="lodgeAmenities" placeholder="e.g. Wifi, Pool, Spa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lodgeEmail">Contact Email</label>
+                            <input type="email" id="lodgeEmail" required placeholder="contact@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="lodgePhone">Contact Phone</label>
+                            <input type="text" id="lodgePhone" required placeholder="+1 234 567 8900">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="lodgeImageFile">Lodge Image (Upload from PC)</label>
+                            <input type="file" id="lodgeImageFile" accept="image/*">
+                            <input type="hidden" id="lodgeImageBase64">
+                            <small>Recommended: &lt; 1MB</small>
+                            <!-- Preview -->
+                            <div id="imagePreviewContainer" style="margin-top:10px;">
+                                <img id="imagePreview" src="" alt=""
+                                    style="max-height:100px; display:none; border-radius:4px;">
+                            </div>
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label for="lodgeGalleryFiles">Gallery Images (Select Multiple)</label>
+                            <input type="file" id="lodgeGalleryFiles" accept="image/*" multiple>
+                            <input type="hidden" id="lodgeGalleryBase64"> <!-- Stores JSON string of array -->
+                            <small>Select multiple images. Recommended: &lt; 1MB each</small>
+                            <div id="galleryPreviewContainer"
+                                style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                                <!-- Gallery previews go here -->
+                            </div>
+                        </div>
+
+                    </form>
+                    <div class="form-actions">
+                        <button type="button" class="cancel-btn close-modal-btn">Cancel</button>
+                        <button type="submit" form="lodgeForm" class="save-btn">Save
+                            Lodge</button>
                     </div>
-                    <div class="form-group" style="flex:1;">
-                        <label for="lodgeLon">Longitude</label>
-                        <input type="number" id="lodgeLon" step="any" placeholder="e.g. 7.96871">
-                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="lodgePrice">Price (USD)</label>
-                    <input type="number" id="lodgePrice" required>
-                </div>
-                <!-- Safety Score -->
-                <div class="form-group">
-                    <label for="lodgeSafety">Community Safety Score (1-5)</label>
-                    <input type="number" id="lodgeSafety" min="1" max="5" step="0.1" required value="5">
-                </div>
-
-                <!-- Discount -->
-                <div class="form-group">
-                    <label for="lodgeDiscount">Discount Percentage (%)</label>
-                    <input type="number" id="lodgeDiscount" min="0" max="100" value="0">
-                    <small>Set to 0 to remove discount.</small>
-                </div>
-
-                <!-- Expanded Info -->
-                <div class="form-group">
-                    <label for="lodgeDescription">Description</label>
-                    <textarea id="lodgeDescription" rows="4" style="width:100%; padding:10px; font-family:inherit;"
-                        required placeholder="Experience the pinnacle of luxury..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="lodgeAmenities">Amenities (comma separated)</label>
-                    <input type="text" id="lodgeAmenities" placeholder="e.g. Wifi, Pool, Spa" required>
-                </div>
-                <div class="form-group">
-                    <label for="lodgeEmail">Contact Email</label>
-                    <input type="email" id="lodgeEmail" required placeholder="contact@example.com">
-                </div>
-                <div class="form-group">
-                    <label for="lodgePhone">Contact Phone</label>
-                    <input type="text" id="lodgePhone" required placeholder="+1 234 567 8900">
-                </div>
-
-                <div class="form-group">
-                    <label for="lodgeImageFile">Lodge Image (Upload from PC)</label>
-                    <input type="file" id="lodgeImageFile" accept="image/*">
-                    <input type="hidden" id="lodgeImageBase64">
-                    <small>Recommended: &lt; 1MB</small>
-                    <!-- Preview -->
-                    <div id="imagePreviewContainer" style="margin-top:10px;">
-                        <img id="imagePreview" src="" alt="" style="max-height:100px; display:none; border-radius:4px;">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="lodgeGalleryFiles">Gallery Images (Select Multiple)</label>
-                    <input type="file" id="lodgeGalleryFiles" accept="image/*" multiple>
-                    <input type="hidden" id="lodgeGalleryBase64"> <!-- Stores JSON string of array -->
-                    <small>Select multiple images. Recommended: &lt; 1MB each</small>
-                    <div id="galleryPreviewContainer" style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
-                        <!-- Gallery previews go here -->
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="button" class="cancel-btn close-modal-btn">Cancel</button>
-                    <button type="submit" class="save-btn">Save Lodge</button>
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
 
-    <!-- Broadcast Modal -->
-    <div id="broadcastModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal close-broadcast">&times;</span>
-            <h2 id="broadcastTitle">Send Update</h2>
-            <p id="broadcastSubtitle">Message subscribers.</p>
-            <form id="broadcastForm">
-                <input type="hidden" id="broadcastLodgeId">
-                <div class="form-group">
-                    <label for="broadcastSubject">Subject</label>
-                    <input type="text" id="broadcastSubject" required placeholder="e.g., Special Winter Sale!">
-                </div>
-                <div class="form-group">
-                    <label for="broadcastMessage">Message</label>
-                    <textarea id="broadcastMessage" required rows="4"
-                        placeholder="Enter your message here..."></textarea>
-                </div>
-                <button type="submit" class="save-btn">Send Broadcast</button>
-            </form>
+        <!-- Broadcast Modal -->
+        <div id="broadcastModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal close-broadcast">&times;</span>
+                <h2 id="broadcastTitle">Send Update</h2>
+                <p id="broadcastSubtitle">Message subscribers.</p>
+                <form id="broadcastForm">
+                    <input type="hidden" id="broadcastLodgeId">
+                    <div class="form-group">
+                        <label for="broadcastSubject">Subject</label>
+                        <input type="text" id="broadcastSubject" required placeholder="e.g., Special Winter Sale!">
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastMessage">Message</label>
+                        <textarea id="broadcastMessage" required rows="4"
+                            placeholder="Enter your message here..."></textarea>
+                    </div>
+                    <button type="submit" class="save-btn">Send Broadcast</button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <script src="script.js"></script>
 </body>
 
 </html>
