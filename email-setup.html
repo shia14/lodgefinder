@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Setup - Lodge Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c5f4f 0%, #1f4538 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .step {
+            margin-bottom: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #2c5f4f;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: #2c5f4f;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+
+        .step h2 {
+            display: inline-block;
+            color: #2c5f4f;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .step p,
+        .step li {
+            color: #555;
+            line-height: 1.8;
+            margin: 10px 0;
+        }
+
+        .step ul {
+            margin-left: 40px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-size: 0.9rem;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #2c5f4f;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #1f4538;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .warning strong {
+            color: #856404;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .link-box {
+            background: white;
+            border: 2px solid #2c5f4f;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .link-box a {
+            color: #2c5f4f;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: none;
+        }
+
+        .link-box a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📧 Email Setup Guide</h1>
+            <p>Enable email functionality for Lodge Finder</p>
+        </div>
+
+        <div class="content">
+            <div class="step">
+                <span class="step-number">1</span>
+                <h2>Generate Gmail App Password</h2>
+                <p>You need to create a special App Password for the Lodge Finder server to send emails on your behalf.
+                </p>
+
+                <div class="link-box">
+                    <a href="https://myaccount.google.com/apppasswords" target="_blank">
+                        🔗 Click here to generate App Password
+                    </a>
+                </div>
+
+                <ul>
+                    <li>Make sure <strong>2-Factor Authentication</strong> is enabled on your Google account</li>
+                    <li>Select <span class="highlight">Mail</span> as the app</li>
+                    <li>Select <span class="highlight">Windows Computer</span> as the device</li>
+                    <li>Click <span class="highlight">Generate</span></li>
+                    <li>Copy the 16-character password (example: <code>abcd efgh ijkl mnop</code>)</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>⚠️ Important:</strong> Use the App Password, NOT your regular Gmail password!
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h2>Edit the .env File</h2>
+                <p>The <code>.env</code> file should already be open in Notepad. If not, open it manually.</p>
+
+                <p>Find this line:</p>
+                <div class="code-block">EMAIL_PASSWORD=your-app-password-here</div>
+
+                <p>Replace <code>your-app-password-here</code> with your App Password:</p>
+                <div class="code-block">EMAIL_PASSWORD=abcdefghijklmnop</div>
+
+                <div class="warning">
+                    <strong>📝 Note:</strong> Remove all spaces from the App Password when pasting it!
+                </div>
+
+                <p><strong>Save the file</strong> (Ctrl+S) and close Notepad.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h2>Restart the Server</h2>
+                <p>The server needs to be restarted to load the new email configuration.</p>
+
+                <ol>
+                    <li>Go to the terminal where <code>npm start</code> is running</li>
+                    <li>Press <span class="highlight">Ctrl + C</span> to stop the server</li>
+                    <li>Run <code>npm start</code> again</li>
+                </ol>
+
+                <div class="success">
+                    <strong>✅ Success indicator:</strong> You should see "Email server is ready to send messages"
+                    instead of an error.
+                </div>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <h2>Test Email Functionality</h2>
+                <p>Now let's test if emails are working!</p>
+
+                <h3 style="margin-top: 20px; color: #2c5f4f;">Test Contact Form:</h3>
+                <a href="http://localhost:3000/contact.html" class="btn" target="_blank">Open Contact Form</a>
+                <p>Fill out the form and submit. Check your inbox at <strong>blessingsphiri196@gmail.com</strong></p>
+
+                <h3 style="margin-top: 20px; color: #2c5f4f;">Test Bookmark Subscription:</h3>
+                <a href="http://localhost:3000/search.html" class="btn btn-secondary" target="_blank">Open Search
+                    Page</a>
+                <p>Click the heart icon on any lodge, enter an email, and check both inboxes.</p>
+            </div>
+
+            <div class="warning">
+                <strong>🔒 Security Reminder:</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Never share your <code>.env</code> file or App Password</li>
+                    <li>The <code>.env</code> file is protected by <code>.gitignore</code></li>
+                    <li>If exposed, revoke the App Password and generate a new one</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="http://localhost:3000" class="btn">← Back to Lodge Finder</a>
+                <a href="http://localhost:3000/admin/login.html" class="btn btn-secondary">Admin Panel</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

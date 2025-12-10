@@ -203,7 +203,11 @@ function saveLodges(lodges) {
     try {
         localStorage.setItem('lodges', JSON.stringify(lodges));
     } catch (e) {
-        alert("Quota exceeded! Image might be too large. Try a smaller image.");
+        if (e.name === 'QuotaExceededError') {
+            alert("Storage quota exceeded! The image is too large for browser storage. Try using a smaller image or compress it.");
+        } else {
+            alert("Error saving data: " + e.message);
+        }
     }
 }
 
@@ -241,7 +245,7 @@ window.addEventListener('click', (e) => {
 });
 
 if (broadcastForm) {
-    broadcastForm.addEventListener('submit', (e) => {
+    broadcastForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('broadcastLodgeId').value;
         const subject = document.getElementById('broadcastSubject').value;
@@ -256,16 +260,50 @@ if (broadcastForm) {
             return;
         }
 
-        // Simulate Sending via Mailto
-        const emails = subscribers.map(s => s.email).join(',');
+        // Get lodge name
+        const lodges = getLodges();
+        const lodge = lodges.find(l => l.id == id);
+        const lodgeName = lodge ? lodge.name : 'Unknown Lodge';
 
-        if (confirm(`This will open your default email client to send messages to ${subscribers.length} subscribers. Continue?`)) {
-            const mailtoLink = `mailto:?bcc=${encodeURIComponent(emails)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
-            window.location.href = mailtoLink;
+        // Extract email addresses
+        const emails = subscribers.map(s => s.email);
 
-            alert(`Email client opened! In a real application, this would have been sent automatically via a server.`);
-            broadcastModal.classList.remove('active');
-            broadcastForm.reset();
+        // Disable submit button
+        const submitBtn = broadcastForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending...';
+
+        try {
+            const response = await fetch('/api/broadcast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    emails: emails,
+                    subject: subject,
+                    message: message,
+                    lodgeName: lodgeName
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                alert(data.message);
+                broadcastModal.classList.remove('active');
+                broadcastForm.reset();
+            } else {
+                alert(data.message || 'Failed to send broadcast. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error sending broadcast:', error);
+            alert('Unable to connect to the server. Please make sure the server is running.');
+        } finally {
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
         }
     });
 }
@@ -365,6 +403,8 @@ function saveLodgeData() {
                 discount,
                 lat,
                 lon,
+                // Update image if new one provided, otherwise keep old
+                image: newImage || oldLodge.image,
                 // Only update gallery if new ones provided. 
                 // NOTE: This basic implementation replaces the gallery if new files are selected.
                 // Refining to append could be complex without better UI. 

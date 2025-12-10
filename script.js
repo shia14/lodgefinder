@@ -129,13 +129,13 @@ function setupBookmarks() {
     if (!document.getElementById('bookmarkModal')) {
         const modalHTML = `
             <div id="bookmarkModal" class="modal">
-                <div class="modal-content">
+                <div class="modal-content" style="max-width: 500px; padding: 30px;">
                     <span class="close-modal close-bookmark">&times;</span>
-                    <h2>Get Updates</h2>
-                    <p class="subscribe-note">Bookmark this lodge and subscribe to receive discount alerts and special event notifications.</p>
-                    <input type="email" id="bookmarkEmail" class="subscribe-input" placeholder="Enter your email address">
-                    <button class="modal-btn primary" id="confirmBookmarkBtn">Bookmark & Subscribe</button>
-                    <button class="modal-btn" id="cancelBookmarkBtn">Cancel</button>
+                    <h2 style="margin-bottom: 15px; font-size: 1.8rem;">Get Updates</h2>
+                    <p class="subscribe-note" style="margin-bottom: 20px; color: #666; font-size: 0.95rem;">Bookmark this lodge and subscribe to receive discount alerts and special event notifications.</p>
+                    <input type="email" id="bookmarkEmail" class="subscribe-input" placeholder="Enter your email address" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; font-size: 1rem;">
+                    <button class="modal-btn primary" id="confirmBookmarkBtn" style="width: 100%; padding: 12px; background: #2c5f4f; color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; margin-bottom: 10px;">Bookmark & Subscribe</button>
+                    <button class="modal-btn" id="cancelBookmarkBtn" style="width: 100%; padding: 12px; background: #f0d9dd; color: #2c5f4f; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">Cancel</button>
                 </div>
             </div>
         `;
@@ -208,16 +208,44 @@ function toggleBookmark(id, btnElement) {
 
 function saveBookmark(id, email) {
     const bookmarks = getBookmarks();
+    const lodges = getLodges();
+    const lodge = lodges.find(l => l.id == id);
+
     bookmarks.push({
         id: id,
         email: email,
         date: new Date().toISOString()
     });
+
     try {
         localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-        // Alert or Toast
-        alert(`Lodge bookmarked! You will receive alerts at ${email}.`);
         updateBookmarkVisuals(id, true);
+
+        // Send subscription email via server
+        fetch('/api/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: email,
+                lodgeName: lodge ? lodge.name : 'Unknown Lodge',
+                lodgeId: id
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message || `Lodge bookmarked! You will receive alerts at ${email}.`);
+                } else {
+                    alert(`Lodge bookmarked locally! ${data.message || 'Email notification may not have been sent.'}`);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending subscription email:', error);
+                alert(`Lodge bookmarked! You will receive alerts at ${email}.\n(Note: Email server may not be running)`);
+            });
+
     } catch (e) {
         console.error("Storage failed:", e);
         alert("Unable to save bookmark. Your storage might be full.");

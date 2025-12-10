@@ -135,7 +135,7 @@
                             <label for="lodgeImageFile">Lodge Image (Upload from PC)</label>
                             <input type="file" id="lodgeImageFile" accept="image/*">
                             <input type="hidden" id="lodgeImageBase64">
-                            <small>Recommended: &lt; 1MB</small>
+                            <small>Accepts images of any size (larger images may take longer to load)</small>
                             <!-- Preview -->
                             <div id="imagePreviewContainer" style="margin-top:10px;">
                                 <img id="imagePreview" src="" alt=""
@@ -147,7 +147,8 @@
                             <label for="lodgeGalleryFiles">Gallery Images (Select Multiple)</label>
                             <input type="file" id="lodgeGalleryFiles" accept="image/*" multiple>
                             <input type="hidden" id="lodgeGalleryBase64"> <!-- Stores JSON string of array -->
-                            <small>Select multiple images. Recommended: &lt; 1MB each</small>
+                            <small>Select multiple images. Accepts any size (larger images may take longer to
+                                load)</small>
                             <div id="galleryPreviewContainer"
                                 style="margin-top:10px; display:flex; gap:10px; flex-wrap:wrap;">
                                 <!-- Gallery previews go here -->
@@ -163,30 +164,31 @@
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Broadcast Modal -->
-        <div id="broadcastModal" class="modal">
-            <div class="modal-content">
-                <span class="close-modal close-broadcast">&times;</span>
-                <h2 id="broadcastTitle">Send Update</h2>
-                <p id="broadcastSubtitle">Message subscribers.</p>
-                <form id="broadcastForm">
-                    <input type="hidden" id="broadcastLodgeId">
-                    <div class="form-group">
-                        <label for="broadcastSubject">Subject</label>
-                        <input type="text" id="broadcastSubject" required placeholder="e.g., Special Winter Sale!">
-                    </div>
-                    <div class="form-group">
-                        <label for="broadcastMessage">Message</label>
-                        <textarea id="broadcastMessage" required rows="4"
-                            placeholder="Enter your message here..."></textarea>
-                    </div>
-                    <button type="submit" class="save-btn">Send Broadcast</button>
-                </form>
-            </div>
+    <!-- Broadcast Modal -->
+    <div id="broadcastModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close-modal close-broadcast">&times;</span>
+            <h2 id="broadcastTitle">Send Update</h2>
+            <p id="broadcastSubtitle">Message subscribers.</p>
+            <form id="broadcastForm">
+                <input type="hidden" id="broadcastLodgeId">
+                <div class="form-group">
+                    <label for="broadcastSubject">Subject</label>
+                    <input type="text" id="broadcastSubject" required placeholder="e.g., Special Winter Sale!">
+                </div>
+                <div class="form-group">
+                    <label for="broadcastMessage">Message</label>
+                    <textarea id="broadcastMessage" required rows="4"
+                        placeholder="Enter your message here..."></textarea>
+                </div>
+                <button type="submit" class="save-btn">Send Broadcast</button>
+            </form>
         </div>
+    </div>
 
-        <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>
